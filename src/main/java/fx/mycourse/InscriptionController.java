@@ -3,12 +3,14 @@ package fx.mycourse;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import fx.mycourse.server.models.Course;
 import fx.mycourse.server.models.RegistrationForm;
 import javafx.geometry.Side;
@@ -30,7 +32,8 @@ public class InscriptionController {
      * Permet d'accéder à InscriptionView
      */
     private InscriptionView view;
-
+    private login loginPage;
+    private ModelPage modelPage;
     /**
      * Sélectionne la session
      */
@@ -61,18 +64,29 @@ public class InscriptionController {
      * La prise du client
      */
     private Socket clientSocket;
+    private Stage stage;
 
-    public InscriptionController(InscriptionView view) throws IOException {
+    public InscriptionController(login loginPage,InscriptionView view, Stage stage,ModelPage modelPage) throws IOException {
 
         //      LA CONNEXION
         try {
             this.clientSocket = new Socket(HOST, PORT);
             this.view = view;
+            this.loginPage = loginPage;
+            this.stage = stage;
+            this.modelPage= modelPage;
         }catch (Exception e){
             errorAlertConnexion();
         }
-
+        System.out.println("Button enabled: " + this.loginPage.getConnectButton().isDisabled());
+        System.out.println("Button visible: " + this.loginPage.getConnectButton().isVisible());
         //      LES ACTIONS
+        this.loginPage.getConnectButton().setOnAction((action) ->{
+            System.out.println("Button clicked");
+            this.modelPage.setTop(view);
+            stage.setScene ( new Scene(modelPage, 800, 600));
+           // stage.setScene (this.view);
+        });
         /*
          * Ajoute une action sur le bouton session dans le but d'afficher le menu contextuel
          * et affiche les sessions dans le menu contextuel.

@@ -103,7 +103,7 @@ public class InscriptionView extends BorderPane {
 
         // ajoute les conteurs au splitPane
         splitPane = new SplitPane(leftPane, rightPane);
-        splitPane.setPrefSize(800, 600);
+        //splitPane.setPrefSize(800, 600);
         this.setCenter(splitPane);
     }
 

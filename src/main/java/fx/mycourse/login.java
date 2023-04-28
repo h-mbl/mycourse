@@ -3,6 +3,7 @@ package fx.mycourse;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
 public class login extends BorderPane{
@@ -12,11 +13,14 @@ public class login extends BorderPane{
     private GridPane grid;
     private Label titleLabel;
     private VBox unique;
+    private Stage stage;
 
-    public login() {
+    public login(Stage stage) {
+        this.stage = stage;
         titleLabel = getTitleLabel();
         grid = createForm();
-        connectButton = getConnectButton();
+        this.connectButton = new Button("Connect");
+        this.connectButton.setAlignment(Pos.BASELINE_LEFT);
         unique = new VBox(titleLabel, grid, connectButton);
         unique.setAlignment(Pos.TOP_CENTER);
         unique.setSpacing(80);
@@ -24,11 +28,7 @@ public class login extends BorderPane{
         this.setCenter(unique);
     }
     
-    /**
-     * Configures the login form
-     * 
-     * @return grid
-     */
+ 
     private GridPane createForm() {
         GridPane grid = new GridPane();
         matricule = new TextField();
@@ -59,10 +59,8 @@ public class login extends BorderPane{
     /**
      * Configures the connect button
      */
-    private Button getConnectButton() {
-        connectButton = new Button("Connect");
-        connectButton.setAlignment(Pos.BASELINE_LEFT);
-        return connectButton;
+    public Button getConnectButton() {
+        return this.connectButton;
     }
     
     // getters and setters for matricule and password fields

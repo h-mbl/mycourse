@@ -15,23 +15,24 @@ public class InscriptionLauncher extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        login loginPage= new login();
+        login loginPage= new login(stage);
+        ModelPage modelpage= new ModelPage();
         // InscriptionView représente la vue de l'interface utilisateur
-       // InscriptionView View = new InscriptionView();
+        InscriptionView View = new InscriptionView();
 
         // InscriptionController est responsable de la gestion des interactions de l'utilisateur avec l'interface
-        //InscriptionController Controller = new InscriptionController(View);
+        InscriptionController Controller = new InscriptionController(loginPage,View,stage,modelpage);
 
         // Scene définit la taille de la fenêtre
         Scene scene = new Scene(loginPage, 800, 600);
-
+        System.out.println("Stage: " + stage); 
         // stage
         stage.setScene(scene);
         stage.setTitle("Mycourses");
         stage.show();
 
         // connecte le client au serveur
-       // Controller.start();
+        //Controller.start();
     }
 
     /**

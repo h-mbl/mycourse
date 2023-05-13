@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import fx.mycourse.server.models.Course;
 import fx.mycourse.server.models.RegistrationForm;
+import fx.mycourse.server.models.LoginConnect;
 import javafx.geometry.Side;
 import javafx.scene.control.MenuItem;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class InscriptionController {
      * Permet d'accéder à InscriptionView
      */
     private InscriptionView view;
-    private login loginPage;
+    private Login loginPage;
     private ModelPage modelPage;
     /**
      * Sélectionne la session
@@ -48,7 +49,7 @@ public class InscriptionController {
     /**
      * Port du serveur auquel le client veut se connecter
      */
-    private static final int PORT = 1337;
+    private static final int PORT = 9090;
 
     /**
      * La sortie des arguments du client vers le serveur
@@ -66,7 +67,7 @@ public class InscriptionController {
     private Socket clientSocket;
     private Stage stage;
 
-    public InscriptionController(login loginPage,InscriptionView view, Stage stage,ModelPage modelPage) throws IOException {
+    public InscriptionController(Login loginPage,InscriptionView view, Stage stage,ModelPage modelPage) throws IOException {
 
         //      LA CONNEXION
         try {
@@ -78,13 +79,52 @@ public class InscriptionController {
         }catch (Exception e){
             errorAlertConnexion();
         }
-        System.out.println("Button enabled: " + this.loginPage.getConnectButton().isDisabled());
-        System.out.println("Button visible: " + this.loginPage.getConnectButton().isVisible());
+       // System.out.println("Button enabled: " + this.loginPage.getConnectButton().isDisabled());
+        //System.out.println("Button visible: " + this.loginPage.getConnectButton().isVisible());
         //      LES ACTIONS
         this.loginPage.getConnectButton().setOnAction((action) ->{
-            System.out.println("Button clicked");
-            this.modelPage.setTop(view);
-            stage.setScene ( new Scene(modelPage, 800, 600));
+            try {
+                LoginConnect Connectform = new LoginConnect(loginPage.getMatricule().getText(), loginPage.getPassword().getText());
+                //Login login = new Login(this.loginPage.getMatricule(),this.loginPage.getPassword());
+                System.out.println(Connectform);
+                System.out.println("je suis ici 1");
+                start();
+                System.out.println("je suis ici 2");
+                 // envoie la requête CHARGER + le nom de la session au serveur
+                 objectOutputStream.writeObject("CONNECT");
+               //  objectOutputStream.writeObject(loginPage.getMatricule().getText());
+               //  objectOutputStream.writeObject(loginPage.getPassword().getText());
+                 objectOutputStream.writeObject(Connectform);
+                 System.out.println("je suis ici 3");
+                try{
+                    System.out.println("je suis ici 4");
+                 // enregistre la réponse du serveur dans un objet
+                 Object Connect = objectInputStream.readObject();
+                 System.out.println(Connect);
+                 System.out.println("je suis ici 5");
+               //  String response =  (String) objectInputStream.readObject();
+              //   System.out.println(response);
+                if (Connect.equals("Erreur de l'identifiant")) {
+                    System.out.println("je suis ici 6");
+                    errorAlert(3);
+                } else {
+                 System.out.println("je suis ici 5");
+                this.modelPage.setTop(view);
+                stage.setScene ( new Scene(modelPage, 800, 600));
+                }} catch (ClassNotFoundException e) {
+                    errorAlertConnexion();
+                }
+
+            } catch (IOException e) {
+                try {
+                    errorAlert(3);
+                    reconnect();
+                } catch (IOException e1) {
+                    errorAlertConnexion();
+                }
+                
+            }
+           
            // stage.setScene (this.view);
         });
         /*
@@ -342,6 +382,8 @@ public class InscriptionController {
                 view.changeTableBorder("red");
                 view.showAlert("Cours invalide", "Veuillez sélectionner un cours");
                 break;
+            case 3 :
+            view.showAlert("Erreur Identifiant", "matricule ou mot de passe incorrect \n Veuillez réessayer");
 
         }
     }

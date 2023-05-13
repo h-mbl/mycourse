@@ -6,7 +6,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
-public class login extends BorderPane{
+public class Login extends BorderPane{
     private TextField matricule;
     private TextField password;
     private Button connectButton;
@@ -15,7 +15,7 @@ public class login extends BorderPane{
     private VBox unique;
     private Stage stage;
 
-    public login(Stage stage) {
+    public Login(Stage stage) {
         this.stage = stage;
         titleLabel = getTitleLabel();
         grid = createForm();

@@ -2,6 +2,7 @@ package fx.mycourse.server;
 
 import javafx.util.Pair;
 import fx.mycourse.server.models.Course;
+import fx.mycourse.server.models.LoginConnect;
 import fx.mycourse.server.models.RegistrationForm;
 
 import java.io.*;
@@ -24,6 +25,10 @@ public class Server {
      * Commande permettant de montrer les cours d'une session à un client
      */
     public final static String LOAD_COMMAND = "CHARGER";
+    /**
+     * Commande permettant de connecter le client
+     */
+    public final static String CONNECT_COMMAND = "CONNECT";
 
     /**
      * La prise du serveur
@@ -72,12 +77,12 @@ public class Server {
     /**
      * Mets en action les événements ajoutés.
      * @param cmd la commande à renvoyer
-     * @param arg l’argument a donné à la commande.
+     * @param object l’argument a donné à la commande.
      * @throws IOException si une erreur survient lors de la gestion des commandes
      */
-    private void alertHandlers(String cmd, String arg) throws IOException {
+    private void alertHandlers(String cmd, Object object) throws IOException {
         for (EventHandler h : this.handlers) {
-            h.handle(cmd, arg);
+            h.handle(cmd, object);
         }
     }
 
@@ -106,16 +111,32 @@ public class Server {
      * @throws ClassNotFoundException si une classe n’est pas trouvé
      */
     public void listen() throws IOException, ClassNotFoundException {
-        String line;
-
-       if ((line = this.objectInputStream.readObject().toString()) != null) {
-            Pair<String, String> parts = processCommandLine(line);
-            String cmd = parts.getKey();
-            String arg = parts.getValue();
-            this.alertHandlers(cmd, arg);
+        while (true) {
+            Object object = this.objectInputStream.readObject();
+            if (object instanceof String) {
+                String line = (String) object;
+                Pair<String, String> parts = processCommandLine(line);
+                String cmd = parts.getKey();
+                String arg = parts.getValue();
+                this.alertHandlers(cmd, object);
+            }
+            else {
+                // traitement des autres types d'objets sérialisés
+                if (object instanceof Integer) {
+                    int intValue = (int) object;
+                    // traitement spécifique pour les objets Integer
+                }
+               // else if (object instanceof MyCustomObject) {
+              //      MyCustomObject customObject = (MyCustomObject) object;
+                    // traitement spécifique pour les objets MyCustomObject
+              //  }
+                else {
+                    // traitement par défaut pour les autres types d'objets sérialisés
+                    System.out.println("Objet non géré : " + object.getClass().getName());
+                }
+            }
         }
     }
-
     /**
      * Mets en page la commande obtenue.
      * @param line une commande
@@ -144,11 +165,58 @@ public class Server {
      * @param arg l'argument a utilisé avec la commande.
      * @throws IOException lorsqu'une erreur survient lors de la manipulation des fichiers
      */
-    public void handleEvents(String cmd, String arg) throws IOException {
+    public void handleEvents(String cmd, Object arg) throws IOException {
         if (cmd.equals(REGISTER_COMMAND)) {
             handleRegistration();
         } else if (cmd.equals(LOAD_COMMAND)) {
-            handleLoadCourses(arg);
+            //handleLoadCourses(arg);
+        }
+        else if(cmd.equals(CONNECT_COMMAND)){
+            LoginConnect connectForm = (LoginConnect) arg;
+            handleConnect(connectForm.getMatricule(), connectForm.getPassword());
+        }
+    }
+
+
+    private void handleConnect(String matricule,String motDePasse) throws IOException {
+        System.out.println(matricule + " " + motDePasse + "aftertext");
+        System.out.println("je suis ici server");
+        try {
+            FileReader connect =  new FileReader("src/main/java/fx/mycourse/server/data/admin.csv");
+            BufferedReader check = new BufferedReader(connect);
+            String line;
+            boolean isFound= false;
+            //while (line != null) {
+            while ((line = check.readLine()) != null) {
+                String[] data = line.split(",");
+                //String nom = data[0];
+               // String prenom = data[1];
+                String sexe = data[2];
+                String email = data[3];
+                String matriculeCsv = data[4];
+                String motDePasseCsv = data[5];
+                String dateDAdmission = data[6];
+                String nbCoursCompletes = data[7];
+                String nbCoursEnCours = data[8];
+                String nbCreditsCompletes = data[9];
+                String nbCreditsRestant = data[10];
+                String Cours = data[11];
+                if (matricule.equals(matriculeCsv) && motDePasse.equals(motDePasseCsv)) {
+                    String nom = data[0];
+                    String prenom = data[1];
+                    System.out.println("Connexion réussie : " + nom + " " + prenom);
+                    objectOutputStream.writeObject("Connexion réussie : " + nom + " " + prenom);
+                    isFound = true;
+                    break;
+                }
+            }
+            if (!isFound) {
+                objectOutputStream.writeObject("Erreur de l'identifiant");
+                System.out.println("Échec de la connexion : matricule ou mot de passe incorrect");
+            }
+        } catch (IOException e) {
+            objectOutputStream.writeObject("\nUne erreur est survenue lors de la lecture du fichier\n");
+            throw new RuntimeException(e);
         }
     }
 
@@ -161,7 +229,7 @@ public class Server {
     public void handleLoadCourses(String arg) throws IOException {
         ArrayList<Course> relevantClasses = new ArrayList<>();
         try {
-            FileReader classes = new FileReader("src/main/java/server/data/cours.txt");
+            FileReader classes = new FileReader("src/main/java/fx/mycourse/server/data/cours.txt");
             BufferedReader reader = new BufferedReader(classes);
             String line;
             while ((line = reader.readLine()) != null) {

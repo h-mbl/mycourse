@@ -17,7 +17,7 @@ public class ModelPage extends BorderPane {
 
         VBox topBox = new VBox();
         topBox.setStyle("-fx-background-color: #E6E6E6;");
-        topBox.setMinWidth(10000);
+        topBox.setMinWidth(750);
         setTop(topBox); // Utiliser setTop sur l'instance courante de ModelPage
 
         // Création de la partie inférieure (20% de la page)

@@ -15,7 +15,7 @@ public class InscriptionLauncher extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        login loginPage= new login(stage);
+        Login loginPage= new Login(stage);
         ModelPage modelpage= new ModelPage();
         // InscriptionView représente la vue de l'interface utilisateur
         InscriptionView View = new InscriptionView();

@@ -1,0 +1,4 @@
+Nom,prenom,sexe,email,Matricule,Mot de passe,Date d'admission,Nb. de cours complétés,Nb. de cours en cours,Nb. de crédits complétés,Nb. de crédits restants,Cours suivis et complétés
+John,Doe,M,john.Doe@email.com,123456,mdp123,01092020,0,0,0,0,SO
+Jane,Legrand,F,jane.Legrand@email.com,789012,mdp456,01092020,0,0,0,0,SO
+Bob,Smith,M,bob.smith@email.com,345678,mdp789,01092020,0,0,0,0,SO
